@@ -5,6 +5,10 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { CalendarModule } from './calendar/calendar.module';
+import { GroupsModule } from './groups/groups.module';
+import { AnalysisModule } from './analysis/analysis.module';
+import { ShoppingListModule } from './shopping-list/shopping-list.module';
+import { NlpModule } from './nlp/nlp.module';
 
 @Module({
   imports: [
@@ -24,6 +28,7 @@ import { CalendarModule } from './calendar/calendar.module';
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
 
+
       }),
       inject: [ConfigService],
     }),
@@ -31,6 +36,10 @@ import { CalendarModule } from './calendar/calendar.module';
     UsersModule,
     RecipesModule,
     CalendarModule,
+    GroupsModule,
+    ShoppingListModule,
+    AnalysisModule,
+    NlpModule,
   ],
 })
 export class AppModule { }

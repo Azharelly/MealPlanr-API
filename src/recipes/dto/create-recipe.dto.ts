@@ -11,13 +11,13 @@ export class CreateIngredientDto {
 export class CreateRecipeDto {
   name: string;
   image?: string;
-  time?: string; // string
+  time?: string;
   servings?: number;
   totalCalories: number;
   totalProtein: number;
   totalFat: number;
   totalCarbs: number;
   steps?: string[];
-  group?: string;
+  groupId?: string;
   ingredients: CreateIngredientDto[];
 }

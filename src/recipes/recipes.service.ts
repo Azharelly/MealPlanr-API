@@ -17,9 +17,18 @@ export class RecipesService {
     ) { }
 
     async create(createRecipeDto: CreateRecipeDto, userId: string): Promise<Recipe> {
+        const { id, ingredients, groupId, ...rest } = createRecipeDto as any;
+
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const cleanGroupId = groupId && uuidRegex.test(groupId) ? groupId : undefined;
+
+        const cleanIngredients = (ingredients ?? []).map(({ id: ingId, ...ing }: any) => ing);
+
         const recipe = this.recipesRepository.create({
-            ...createRecipeDto,
+            ...(rest as Partial<Recipe>),
+            ingredients: cleanIngredients,
             userId,
+            ...(cleanGroupId ? { groupId: cleanGroupId } : {}),
         });
         return this.recipesRepository.save(recipe);
     }
@@ -42,9 +51,9 @@ export class RecipesService {
         return recipe;
     }
 
-    async findByGroup(group: string, userId: string): Promise<Recipe[]> {
+    async findByGroup(groupId: string, userId: string): Promise<Recipe[]> {
         return this.recipesRepository.find({
-            where: { group, userId },
+            where: { groupId, userId },
             order: { createdAt: 'DESC' },
         });
     }

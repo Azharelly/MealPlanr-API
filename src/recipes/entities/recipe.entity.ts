@@ -5,6 +5,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/user.entity';
 import { Ingredient } from './ingredient.entity';
+import { Group } from '../../groups/entities/group.entity';
 
 @Entity('recipes')
 export class Recipe {
@@ -38,8 +39,13 @@ export class Recipe {
   @Column('simple-array', { nullable: true })
   steps: string[]; // array de pasos
 
+
+  @ManyToOne(() => Group, (group) => group.recipes, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'groupId' })
+  group: Group | null;
+
   @Column({ nullable: true })
-  group: string;
+  groupId: string | null;
 
   @OneToMany(() => Ingredient, (ingredient) => ingredient.recipe, {
     cascade: true,
