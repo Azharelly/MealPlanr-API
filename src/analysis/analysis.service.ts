@@ -36,30 +36,53 @@ export class AnalysisService {
 
 
     private calcStreak(entries: CalendarEntry[]) {
-        // Group by date → adherence %
         const byDate = this.groupByDate(entries);
-        const sortedDates = Object.keys(byDate).sort().reverse(); // newest first
 
-        let current = 0;
+        // Generar todos los días desde el inicio del período hasta hoy
+        // incluyendo días sin entradas
+        const today = new Date();
+        const allDates: string[] = [];
+
+        for (let i = 27; i >= 0; i--) { // 4 semanas hacia atrás
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            allDates.push(d.toISOString().split('T')[0]);
+        }
+
+        // Para cada día: true si tiene entradas Y adherencia >= 80%, false si no
+        const dayPassed = (date: string): boolean => {
+            const dayEntries = byDate[date];
+            if (!dayEntries || dayEntries.length === 0) return false; // sin entradas = streak roto
+            return this.adherenceForDay(dayEntries) >= 0.8;
+        };
+
+        // Best streak — recorre todos los días en orden
         let best = 0;
         let temp = 0;
-
-        for (const date of sortedDates) {
-            const adh = this.adherenceForDay(byDate[date]);
-            if (adh >= 0.8) {
+        for (const date of allDates) {
+            if (dayPassed(date)) {
                 temp++;
-                if (current === 0) current = temp;
-            } else {
-                if (current === 0) current = 0;
                 best = Math.max(best, temp);
+            } else {
                 temp = 0;
             }
         }
-        best = Math.max(best, temp, current);
+
+        // Current streak — desde hoy hacia atrás, para en cuanto falla
+        let current = 0;
+        const reversedDates = [...allDates].reverse();
+        for (const date of reversedDates) {
+            if (dayPassed(date)) {
+                current++;
+            } else {
+                break;
+            }
+        }
+
+        best = Math.max(best, current);
 
         return { current, best };
     }
-
 
 
     private calcWeeklyAdherence(entries: CalendarEntry[]) {
