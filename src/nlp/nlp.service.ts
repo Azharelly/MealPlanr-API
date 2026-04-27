@@ -4,7 +4,7 @@ import axios from 'axios';
 
 @Injectable()
 export class NlpService {
-    private readonly nlpServiceUrl = 'http://localhost:8000';
+    private readonly nlpServiceUrl = 'https://meal-planr-nlp-production.up.railway.app';
 
     async extractFromFile(file: Express.Multer.File): Promise<any> {
         try {
